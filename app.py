@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from typing import List
 import csv
 import re
@@ -15,24 +15,27 @@ def count_words_in_text(words, text):
 
 @app.post("/count_words")
 async def count_words(words: List[str], file: UploadFile = File(...)):
-    # Read the uploaded file
-    contents = await file.read()
-    text = contents.decode("utf-8")
-    
-    # Count occurrences of words in the text
-    word_counts = count_words_in_text(words, text)
-    
-    # Generate timestamp
-    timestamp = datetime.now().strftime("%Y%m%d%H")
-    
-    # Create a new file name with timestamp
-    csv_file = f'word_counts_{timestamp}.csv'
-    
-    # Write word counts to the new CSV file
-    with open(csv_file, 'w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=['word', 'count'])
-        writer.writeheader()
-        for word in words:
-            writer.writerow({'word': word, 'count': word_counts.get(word, 0)})
-    
-    return {"message": f"Word counts saved to '{csv_file}'."}
+    try:
+        # Read the uploaded file
+        contents = await file.read()
+        text = contents.decode("utf-8")
+        
+        # Count occurrences of words in the text
+        word_counts = count_words_in_text(words, text)
+        
+        # Generate timestamp
+        timestamp = datetime.now().strftime("%Y%m%d%H")
+        
+        # Create a new file name with timestamp
+        csv_file = f'word_counts_{timestamp}.csv'
+        
+        # Write word counts to the new CSV file
+        with open(csv_file, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=['word', 'count'])
+            writer.writeheader()
+            for word in words:
+                writer.writerow({'word': word, 'count': word_counts.get(word, 0)})
+        
+        return {"message": f"Word counts saved to '{csv_file}'."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {e}")
