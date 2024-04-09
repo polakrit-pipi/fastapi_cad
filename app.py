@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from typing import List
 import csv
 import re
+from datetime import datetime
 
 app = FastAPI()
 
@@ -21,8 +22,13 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
     # Count occurrences of words in the text
     word_counts = count_words_in_text(words, text)
     
-    # Save word counts to a CSV file
-    csv_file = 'word_counts.csv'
+    # Generate timestamp
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    
+    # Create a new file name with timestamp
+    csv_file = f'word_counts_{timestamp}.csv'
+    
+    # Write word counts to the new CSV file
     with open(csv_file, 'w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=['word', 'count'])
         writer.writeheader()
