@@ -3,6 +3,7 @@ from typing import List
 import csv
 import re
 from datetime import datetime
+from pathlib import Path
 
 app = FastAPI()
 
@@ -29,6 +30,9 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
         # Create a new file name with timestamp
         csv_file = f'word_counts_{timestamp}.csv'
         
+        # Get the absolute path of the file
+        csv_file_path = str(Path.cwd() / csv_file)
+        
         # Write word counts to the new CSV file
         with open(csv_file, 'w', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=['word', 'count'])
@@ -36,6 +40,6 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
             for word in words:
                 writer.writerow({'word': word, 'count': word_counts.get(word, 0)})
         
-        return {"message": f"Word counts saved to '{csv_file}'."}
+        return {"message": f"Word counts saved to '{csv_file}'.", "file_path": csv_file_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save file: {e}")
