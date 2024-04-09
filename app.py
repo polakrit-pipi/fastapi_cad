@@ -28,7 +28,7 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         
         # Specify the directory where you want to save the file
-        save_directory = "./"
+        save_directory = "C:\\Users\\polakritkra\\Desktop\\MyWork\\pdf\\app"
         
         # Create a new file name with timestamp
         csv_file = f'word_counts_{timestamp}.csv'
