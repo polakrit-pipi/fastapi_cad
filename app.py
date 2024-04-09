@@ -27,14 +27,17 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
         # Generate timestamp
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         
+        # Specify the directory where you want to save the file
+        save_directory = "./"
+        
         # Create a new file name with timestamp
         csv_file = f'word_counts_{timestamp}.csv'
         
         # Get the absolute path of the file
-        csv_file_path = str(Path.cwd() / csv_file)
+        csv_file_path = str(Path(save_directory) / csv_file)
         
         # Write word counts to the new CSV file
-        with open(csv_file, 'w', newline='') as file:
+        with open(csv_file_path, 'w', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=['word', 'count'])
             writer.writeheader()
             for word in words:
