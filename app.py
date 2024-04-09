@@ -23,7 +23,7 @@ async def count_words(words: List[str], file: UploadFile = File(...)):
     word_counts = count_words_in_text(words, text)
     
     # Generate timestamp
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d%H")
     
     # Create a new file name with timestamp
     csv_file = f'word_counts_{timestamp}.csv'
