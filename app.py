@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import csv
@@ -31,14 +30,12 @@ def count_words_in_file(words, text):
         word_counts[word] = count
     return word_counts
 
-def save_word_counts_to_csv(word_counts):
-    csv_file = f"/tmp/word_counts_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+def save_word_counts_to_csv(word_counts, csv_file):
     with open(csv_file, 'w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=['word', 'count'])
         writer.writeheader()
         for word, count in word_counts.items():
             writer.writerow({'word': word, 'count': count})
-    return csv_file
 
 class WordCountRequest(BaseModel):
     file_path: str
@@ -54,5 +51,6 @@ async def word_count(request: WordCountRequest):
 async def word_count_to_csv(request: WordCountRequest):
     text = read_text_from_file(request.file_path)
     word_counts = count_words_in_file(request.words_to_count, text)
-    csv_file = save_word_counts_to_csv(word_counts)
+    csv_file = f"word_counts_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+    save_word_counts_to_csv(word_counts, csv_file)
     return {"message": f"Word counts saved to '{csv_file}'."}
